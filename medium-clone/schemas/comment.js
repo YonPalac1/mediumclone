@@ -4,12 +4,12 @@ export default {
     type: 'document',
     fields: [
       {
-        name: 'title',
+        name: 'name',
         type: 'string',
       },
       {
-        name: 'description',
-        title: 'approved',
+        title: 'Approved',
+        name: 'approved',
         type: 'boolean',
         description: "Comments wont show on the site without approval"
       },

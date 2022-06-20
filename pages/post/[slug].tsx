@@ -19,7 +19,7 @@ interface Props {
 function Post({ post }: Props) {
   const [submitted, setSubmitted] = useState(false);
 
-  console.log(post)
+  console.log(post.comments);
 
   const {
     register,
@@ -27,18 +27,20 @@ function Post({ post }: Props) {
     formState: { errors },
   } = useForm<IFormInput>();
 
-  const onSubmit: SubmitHandler<IFormInput> = async(data) => {
-    await fetch('/api/createComment', {
-        method: 'POST',
-        body: JSON.stringify(data),
-    }).then(() => {
-        console.log(data)
-        setSubmitted(true)
-    }).catch(err => {
-        console.log(err)
-        setSubmitted(false)
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    await fetch("/api/createComment", {
+      method: "POST",
+      body: JSON.stringify(data),
     })
-  }
+      .then(() => {
+        console.log(data);
+        setSubmitted(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        setSubmitted(false);
+      });
+  };
 
   return (
     <main>
@@ -63,7 +65,7 @@ function Post({ post }: Props) {
             src={urlFor(post.author.image).url()!}
           />
           <p className="font-extralight text-sm">
-            Blog post by{" "}
+            Blog post by
             <span className="text-green-600">{post.author.name}</span> -
             Published at {new Date(post._createdAt).toLocaleString()}
           </p>
@@ -82,7 +84,7 @@ function Post({ post }: Props) {
               h2: (props: any) => (
                 <h1 className="text-2xl font-bold my-5" {...props} />
               ),
-              li: (props: any) => (
+              li: ({ children }: any) => (
                 <li className="ml-4 list-disc">{children}</li>
               ),
               link: ({ href, children }: any) => (
@@ -93,22 +95,23 @@ function Post({ post }: Props) {
             }}
           />
         </div>
+      </article>
+      <hr className="max-w-lg my-5 mx-auto border border-yellow-500" />
 
-        <hr className="max-w-lg my-5 mx-auto border border-yellow-500" />
-
-        { submitted ? ( 
-            <div className="flex flex-col py-10 my-10 bg-yellow-500 text-white max-w-2xl mx-auto">
-                <h3 className="text-3xl font-bold">
-                   Thank you for submitting your comment! 
-                </h3>
-                <p>
-                    Once it has been approved, it will appear below!
-                </p>
-            </div>
-        ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col p-5 max-w-2xl mx-auto mb-10">
+      {submitted ? (
+        <div className="flex flex-col py-10 my-10 bg-yellow-500 text-white max-w-2xl mx-auto">
+          <h3 className="text-3xl font-bold">
+            Thank you for submitting your comment!
+          </h3>
+          <p>Once it has been approved, it will appear below!</p>
+        </div>
+      ) : (
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col p-5 max-w-2xl mx-auto mb-10"
+        >
           <h3 className="text-sm text-yellow-500">Enjoyed this article?</h3>
-          <h4 className="text-3xl font-bold">Leave a commet below!</h4>
+          <h4 className="text-3xl font-bold">Leave a comment below!</h4>
           <hr className="py-3 mt-2"></hr>
 
           <input
@@ -133,7 +136,7 @@ function Post({ post }: Props) {
               {...register("email", { required: true })}
               className="shadow border rounded py-2 px-3 form-input mt-1 block w-full ring-yellow-500 outline-none focus:ring"
               placeholder="Write your email"
-              type="text"
+              type="email"
             />
           </label>
           <label className="block mb-5">
@@ -164,22 +167,21 @@ function Post({ post }: Props) {
             className="shadow bg-yellow-500 hover:bg-yellow-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded cursor-pointer"
           />
         </form>
-        )}
+      )}
 
-        {/* Comments */}
+      <div className="flex flex-col p-10 my-10 max-w-2xl mx-auto shadow-yellow-500 shadow space-y-2">
+        <h3 className="text-4xl">Comments</h3>
+        <hr />
 
-        <div className="flex flex-col p-10 my-10 max-w-2xl max-auto shadow-yellow-500 shadow space-y-2">
-            <h3 className="text-4xl">Comments</h3>
-            <hr />
-
-            {post.comments.map((comment)=> {
-                <div key={comment._id}>
-                    <p>
-                    <span className="text-yellow-500">{comment.name}:</span> {comment.comment}</p>
-                </div>
-            })}
-        </div>
-      </article>
+        {post.comments.map((comment) => {
+          return <div key={comment._id}>
+            <p>
+            <span className="text-yellow-500">{comment.name}:</span>
+               {comment.comment}
+            </p>
+          </div>
+        })}
+      </div>
     </main>
   );
 }
